@@ -34,7 +34,7 @@ def login():
                 print("usuário logado")
 
                 next_route = request.form['next']
-                if next_route == None:
+                if next_route == None or next_route == "None":
                     next_route = '2F'
 
                 return redirect(next_route)
