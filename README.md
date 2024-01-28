@@ -2,7 +2,7 @@
 # TCC - Apriori Algorithm
 <img src="https://img.shields.io/pypi/pyversions/python-dotenv?logo=python-dotenv&label=python-dotenv" alt="License"> <img src="https://img.shields.io/pypi/pyversions/flask?logo=flask&label=flask" alt="License"> <img src="https://img.shields.io/pypi/pyversions/flask-login?logo=flask-login&label=flask-login" alt="License"> <img src="https://img.shields.io/pypi/pyversions/pymongo?logo=pymongo&label=pymongo" alt="License"> 
 
-Uma breve descrição sobre o que esse projeto faz e para quem ele é
+Esta aplicação web utilizando o framework Flask, oferece funcionalidades de login, cadastro e análise de dados baseadas no algoritmo Apriori. A aplicação permite que os usuários realizem análises de conjuntos de dados previamente carregados, facilitando a identificação de padrões e associações significativas.
 
 
 ## Instalação
@@ -10,11 +10,12 @@ Uma breve descrição sobre o que esse projeto faz e para quem ele é
 Instale esse projeto com pip
 
 ```bash
-  git clone 
+  git clone https://github.com/menezs/TCC-back-front.git
 ```
 ```bash
-  cd back-front
+  cd TCC-back-front
 ```
+Crie um arquivo `.env` seguindo as especificações  do `.env.example`
 ```bash
   python -m venv venv
 ```
@@ -35,15 +36,6 @@ No seu navegador de acesse o link: [localhost:5001](http://localhost:5001/)
 - Salvar Análises
 - Upload de Datasets
 - Tratamento de Datasets
-
-
-## Contribuindo
-
-Contribuições são sempre bem-vindas!
-
-Veja `contribuindo.md` para saber como começar.
-
-Por favor, siga o `código de conduta` desse projeto.
 
 
 ## Autores
