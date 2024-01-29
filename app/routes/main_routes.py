@@ -5,7 +5,7 @@ from app import app
 @app.route('/')
 @login_required
 def home():
-    return render_template('home.html')
+    return render_template('index.html')
 
 @app.route('/dashboard')
 @login_required
