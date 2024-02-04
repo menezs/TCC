@@ -3,6 +3,9 @@ from flask_login import login_user, login_required, logout_user
 from app import app, login_manager
 from ..database.db_mongo import Mongo
 from app.models.user import User
+from flask_bcrypt import Bcrypt
+
+bcrypt = Bcrypt(app)
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -28,14 +31,14 @@ def login():
 
         if user_data:
 
-            if logpass == user_data['password']:
+            if bcrypt.check_password_hash(user_data['password'], logpass):
                 userLogado = User(user_data['_id'], user_data['name'], user_data['email'])
                 login_user(userLogado)
                 print("usuário logado")
 
                 next_route = request.form['next']
                 if next_route == None or next_route == "None":
-                    next_route = '2F'
+                    next_route = '/'
 
                 return redirect(next_route)
             else:
@@ -60,11 +63,13 @@ def register():
 
         if user_data == None:
 
+            hashed_password = bcrypt.generate_password_hash(logpass).decode('utf-8')
+
             dataDB = {
                 "_id": logemail,
                 "name": logname,
                 "email": logemail,
-                "password": logpass
+                "password": hashed_password
             }
 
             collectionUser.insert_one(dataDB)
