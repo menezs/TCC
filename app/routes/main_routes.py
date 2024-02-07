@@ -11,6 +11,17 @@ ALLOWED_EXTENSIONS = {'csv'}
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+@app.route("/ranking-apriori", methods=['GET'])
+@login_required
+def rankingApriori():
+
+    idParam = request.args.get('id')
+    print(idParam)
+
+    print("aqui")
+
+    return jsonify({"success": True}), 200
+
 @app.route("/upload", methods=['POST'])
 @login_required
 def upload():
