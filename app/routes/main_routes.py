@@ -1,4 +1,4 @@
-from flask import render_template, request, redirect
+from flask import render_template, request, redirect, jsonify
 from flask_login import login_required,current_user
 from werkzeug.utils import secure_filename
 from ..database.db_mongo import Mongo
@@ -70,8 +70,10 @@ def delete():
                 except Exception as e:
 
                     print(f"Ocorreu um erro ao tentar deletar o arquivo: {e}")
+                    
+                    return jsonify({"error": e}), 400
 
-    return redirect('/')
+    return jsonify({"success": True}), 200
 
 
 @app.route('/')

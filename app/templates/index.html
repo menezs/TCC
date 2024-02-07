@@ -37,7 +37,7 @@
             </div>
         </nav>
         <br>
-        <div class="container mt-3 table-bordered">
+        <div class="container-sm mt-3 table-bordered">
             <div class="row">
                 <div class="col-sm-8">
                     <h2>Lista de Arquivos</h2>
@@ -62,23 +62,50 @@
                                 {{ fileName.fileName }}
                             </td>
                             <td class=" text-center">
-                                <a href="#">
+                                <a href="#" style="padding-right: 20px;">
                                     <i
                                         class="fa-solid fa-trash"
+                                        id="file{{ fileName.index }}"
                                         data-bs-toggle="modal"
                                         data-bs-target="#staticBackdropDelete"
                                         data-fileName="{{ fileName.fileName }}"
                                         data-id="{{ fileName._id }}">
                                     </i>
                                 </a>
-                                &nbsp;
-                                &nbsp;
-                                <a href="#"><i class="fa-solid fa-chart-simple"></i></a>
+                                <a href="#">
+                                    <i
+                                        class="fa-solid fa-chart-simple"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#staticBackdropRanking"
+                                        >
+                                    </i>
+                                </a>
                             </td>
                         </tr>
                     {% endfor %}
                 </tbody>
             </table>
+        </div>
+        <br>
+        <br>
+        <!-- Modal -->
+        <div class="modal fade" id="staticBackdropRanking" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">>
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Ranking</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            Mostrar os dados dos 10° colocados no Ranking
+                        </p>
+                    </div>
+                        <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
         </div>
         <br>
         <br>        
@@ -95,7 +122,7 @@
                     </div>
                         <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="button" id="deleteFile" class="btn btn-outline-danger">Delete</button>
+                        <button type="button" id="deleteFile" onclick="deleteFile()" class="btn btn-outline-danger">Delete</button>
                     </div>
                 </div>
             </div>
@@ -147,15 +174,42 @@
         
                     $('#fileName').text(fileName);
 
-                    $('#deleteFile').on('click', function () {
-                        $.post('/delete?id='+idFile, function (data) {
-                            // Callback, se necessário
-                            console.log('Requisição POST concluída');
-                            window.location.reload();
-                        });
-                    });
+                    document.getElementById('deleteFile').setAttribute('data-deleteid', idFile);
                 });
             });
+        </script>
+        <script>
+            function deleteFile(){
+                var deleteButton = document.getElementById("deleteFile");
+                var idFile = deleteButton.dataset.deleteid;
+
+                deleteButton.disabled = true;
+
+                deleteButton.innerHTML = "Loading...";
+
+                fetch('/delete?id='+idFile, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erro na requisição.');
+                    }
+                    return response.json(); 
+                })
+                .then(data => {
+                    console.log(data);
+                    location.reload();
+                })
+                .catch(error => {
+                    console.error('Erro:', error);
+                    deleteButton.disabled = false;
+                    deleteButton.innerHTML = "Delete";
+                })
+                
+            }
         </script>
     </body>
 </html>
