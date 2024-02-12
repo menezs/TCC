@@ -1,10 +1,14 @@
 from flask import render_template, request, redirect, jsonify
 from flask_login import login_required,current_user
 from werkzeug.utils import secure_filename
+from app.models.analyzer import Analyzer
 from ..database.db_mongo import Mongo
 from bson.objectid import ObjectId
+from app.models.plot import Plot
 from app import app
 import os
+import matplotlib
+matplotlib.use('Agg')  
 
 ALLOWED_EXTENSIONS = {'csv'}
 
@@ -16,11 +20,30 @@ def allowed_file(filename):
 def rankingApriori():
 
     idParam = request.args.get('id')
-    print(idParam)
+    collection = Mongo('uploads').collection
 
-    print("aqui")
+    fileName = collection.find_one({"_id": ObjectId(idParam)})
 
-    return jsonify({"success": True}), 200
+    filePath = os.path.join(os.path.abspath(os.path.dirname(__file__)), app.config['UPLOAD_FOLDER'], fileName['fileName'])
+
+    if os.path.exists(filePath):
+
+        plot = Plot(filePath)   
+
+        plot_data, listRankItens = plot.generate_plot()
+
+        analyzer = Analyzer(filePath, idParam)
+
+        analyzerResults = analyzer.firstRanking(listRankItens)
+
+        response = jsonify({"success": True, "data": {"plot": plot_data, "ranking": analyzerResults}}), 200
+
+    else:
+        print("Arquivo Não encontrado")
+
+        response = jsonify({"success": False}), 200
+
+    return response
 
 @app.route("/upload", methods=['POST'])
 @login_required

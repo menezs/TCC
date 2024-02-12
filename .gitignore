@@ -3,3 +3,4 @@
 __pycache__/
 teste.py
 app/static/files/*
+teste.csv

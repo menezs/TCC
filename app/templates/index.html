@@ -40,7 +40,7 @@
         <div class="container-sm mt-3 table-bordered">
             <div class="row">
                 <div class="col-sm-8">
-                    <h2>Lista de Arquivos</h2>
+                    <h2>File List</h2>
                 </div>
                 <div class="col-sm-4" style="text-align: center">
                     <a href="#"><i class="fa-solid fa-plus fa-lg fs-4" data-bs-toggle="modal" data-bs-target="#staticBackdropAdd"></i></a>
@@ -91,15 +91,18 @@
         <br>
         <br>
         <!-- Modal -->
-        <div class="modal fade" id="staticBackdropRanking" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">>
-            <div class="modal-dialog modal-dialog-centered">
+        <div class="modal fade" id="staticBackdropRanking" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">Ranking</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <div class="text-center">
+                        <img id="rankingPlot" class="img-fluid d-none" alt="Imagem de Exemplo">
+                        <table id="rankingList" class="table">
+                        </table>
+                        <div class="spinner-container text-center">
                             <div class="spinner-grow" style="width: 3rem; height: 3rem;" role="status">
                                 <span class="visually-hidden">Loading...</span>
                             </div>
@@ -152,6 +155,9 @@
                                     <input type="file" name="file" class="form-control" id="inputGroupFile02" accept=".csv" required>
                                 </div>
                             </div>
+                            <div>
+                                <p class="fst-italic"style=" margin-top: 10px;margin-bottom: 10px;">Supported files: .csv</p>
+                            </div>
                             <div class="row" style="padding-top: 10px; text-align: end;">
                                 <div class="col">
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -187,6 +193,24 @@
                     var fileName = button.data('filename');
                     var idFile = button.data('id');
 
+                    // Exibir o spinner enquanto a requisição está sendo processada
+                    var spinnerContainer = document.querySelector('.spinner-container');
+                    if (spinnerContainer) {
+                        spinnerContainer.classList.remove('d-none');
+                    }
+
+                    // Ocultar a imagem
+                    var rankingPlot = document.getElementById('rankingPlot');
+                    if (rankingPlot) {
+                        rankingPlot.classList.add('d-none');
+                    }
+
+                    // Ocultar as Regras de Associação
+                    var rankingList = document.getElementById('rankingList');
+                    if (rankingList) {
+                        rankingList.classList.add('d-none');
+                    }
+
                     console.log(fileName)
                     fetch('/ranking-apriori?id='+idFile, {
                         method: 'GET',
@@ -201,8 +225,84 @@
                         return response.json(); 
                     })
                     .then(data => {
-                        console.log(data);
-                        // location.reload();
+                        // console.log(data);
+                        
+                        // Ocultar o spinner após receber a resposta
+                        if (spinnerContainer) {
+                            spinnerContainer.classList.add('d-none');
+                        }
+
+                        
+                        if (rankingPlot) {
+                            rankingPlot.src = "data:image/png;base64,"+data.data.plot;
+                            rankingPlot.classList.remove('d-none');
+                        }
+
+                        if (rankingList) {
+                            // Cria o HTML da tabela
+                            var tabelaHTML = '<table>' +
+                                                '<thead>'+
+                                                '<tr>'+
+                                                    '<th scope="col">#</th>'+
+                                                    '<th scope="col">Item A</th>'+
+                                                    '<th scope="col">Item B</th>'+
+                                                '</tr>'+
+                                                '</thead>'+
+                                                '<tbody>';
+
+                            for (var i = 0; i < data.data.ranking.length; i++) {
+                                if (data.data.ranking[i] !== undefined) {
+                                    tabelaHTML +=  '<tr>'+
+                                                        '<th scope="row">Rule</th>'+
+                                                        '<td>'+ data.data.ranking[i]["productA"] +'</td>'+
+                                                        '<td>'+ data.data.ranking[i]["productB"] +'</td>'+
+                                                    '</tr>'+
+                                                    
+                                                    '<tr>'+
+                                                        '<th scope="row">Confidence</th>'+
+                                                        '<td colspan="2">'+ data.data.ranking[i]["confidence"] +'</td>'+
+                                                    '</tr>'+
+
+                                                    '<tr>'+
+                                                        '<th scope="row">Suppport</th>'+
+                                                        '<td colspan="2">'+ data.data.ranking[i]["support"] +'</td>'+
+                                                    '</tr>'+
+
+                                                    '<tr>'+
+                                                        '<th scope="row">Lift</th>'+
+                                                        '<td colspan="2">'+ data.data.ranking[i]["lift"] +'</td>'+
+                                                    '</tr>';
+                                }else{
+                                    tabelaHTML += '<tr>'+
+                                                        '<th scope="row">Rule</th>'+
+                                                        '<td>##################</td>'+
+                                                        '<td>##################</td>'+
+                                                    '</tr>'+
+                                                    
+                                                    '<tr>'+
+                                                        '<th scope="row">Confidence</th>'+
+                                                        '<td colspan="2">##################</td>'+
+                                                    '</tr>'+
+
+                                                    '<tr>'+
+                                                        '<th scope="row">Suppport</th>'+
+                                                        '<td colspan="2">##################</td>'+
+                                                    '</tr>'+
+
+                                                    '<tr>'+
+                                                        '<th scope="row">Lift</th>'+
+                                                        '<td colspan="2">##################</td>'+
+                                                    '</tr>';
+                                }
+                            }
+
+                            // Fecha a tabela
+                            tabelaHTML += '</tbody></table>';
+
+                            rankingList.innerHTML = tabelaHTML;
+
+                            rankingList.classList.remove('d-none');
+                        }
                     })
                     .catch(error => {
                         console.error('Erro:', error);
