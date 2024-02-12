@@ -14,11 +14,11 @@ class Plot():
         dfRanking = dfRanking.sort_values(by='Quantity', ascending=False).head(10)
 
         fig, ax = plt.subplots()
-        plt.bar(dfRanking['Itemname'], dfRanking['Quantity'])
+        plt.barh(dfRanking['Itemname'], dfRanking['Quantity'])
 
-        plt.xticks(rotation=90)
-        # plt.xlabel('Itemname')
-        plt.ylabel('Quantity')
+        # plt.xticks(rotation=90)
+        plt.ylabel('Itemname')
+        plt.xlabel('Quantity')
         plt.title('Quantidade por Item')
         plt.tight_layout()
 
