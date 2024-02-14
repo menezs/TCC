@@ -4,5 +4,5 @@ __pycache__/
 teste.py
 app/static/files/*
 !app/static/files/
-!app/static/files/dataMarketBasket.csv
+!app/static/files/defaultMarketBasket.csv
 teste.csv

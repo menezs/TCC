@@ -119,10 +119,20 @@ def home():
     collectionUpload = Mongo('uploads').collection
     dataUserDB = collectionUpload.find({'userID': current_user.id})
 
-    if dataUserDB:
-        for index, item in enumerate(dataUserDB):
-            item.update({"index": index+1})
+    defaultFileDB = collectionUpload.find({'userID': 'all'})
+    
+    index = 1
+    if defaultFileDB:
+        for item in defaultFileDB:
+            item.update({"index": index})
             fileNames.append(item)
+            index += 1
+
+    if dataUserDB:
+        for item in dataUserDB:
+            item.update({"index": index})
+            fileNames.append(item)
+            index += 1
 
     return render_template('index.html', fileNames=fileNames)
 

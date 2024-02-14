@@ -62,16 +62,18 @@
                                 {{ fileName.fileName }}
                             </td>
                             <td class=" text-center">
-                                <a href="#" style="padding-right: 20px;">
-                                    <i
-                                        class="fa-solid fa-trash"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#staticBackdropDelete"
-                                        data-fileName="{{ fileName.fileName }}"
-                                        data-id="{{ fileName._id }}"
-                                        >
-                                    </i>
-                                </a>
+                                {% if fileName.index != 1  %}
+                                    <a href="#" style="padding-right: 20px;">
+                                        <i
+                                            class="fa-solid fa-trash"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#staticBackdropDelete"
+                                            data-fileName="{{ fileName.fileName }}"
+                                            data-id="{{ fileName._id }}"
+                                            >
+                                        </i>
+                                    </a>
+                                {% endif %}
                                 <a href="#">
                                     <i
                                         class="fa-solid fa-chart-simple"

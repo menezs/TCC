@@ -38,7 +38,7 @@ class Analyzer():
 
         if not allData:
 
-            dfData = pd.read_csv(self.filePath, sep=";")
+            dfData = pd.read_csv(self.filePath, sep=";", low_memory=False)
 
             dfData.dropna(subset=["Itemname"],inplace=True)
 

@@ -8,13 +8,13 @@ class Plot():
         self.filePath = filePath
 
     def generate_plot(self):
-        df = pd.read_csv(self.filePath, sep=';')
+        df = pd.read_csv(self.filePath, sep=';', low_memory=False)
 
         dfRanking = df.groupby('Itemname')['Quantity'].sum().reset_index()
         dfRanking = dfRanking.sort_values(by='Quantity', ascending=False).head(10)
 
         fig, ax = plt.subplots()
-        plt.barh(dfRanking['Itemname'], dfRanking['Quantity'])
+        plt.barh(dfRanking['Itemname'][::-1], dfRanking['Quantity'][::-1])
 
         # plt.xticks(rotation=90)
         plt.ylabel('Itemname')
