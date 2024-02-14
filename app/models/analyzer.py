@@ -30,6 +30,17 @@ class Analyzer():
 
         return results
     
+    def getCountries(self, country):
+
+        df = pd.read_csv(self.filePath, sep=';', low_memory=False)
+        
+        countries = []
+        for country in df['Country']:
+            if not country in countries:
+                countries.append(country)
+                
+        return countries
+    
     def firstRanking(self, rankingList):
 
         collection = Mongo("aprioriResultsTest").collection

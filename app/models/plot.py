@@ -7,10 +7,12 @@ class Plot():
     def __init__(self, filePath):
         self.filePath = filePath
 
-    def generate_plot(self):
+    def generate_plot(self, country):
         df = pd.read_csv(self.filePath, sep=';', low_memory=False)
+        
+        countryDF = df[df['Country'] == country]
 
-        dfRanking = df.groupby('Itemname')['Quantity'].sum().reset_index()
+        dfRanking = countryDF.groupby('Itemname')['Quantity'].sum().reset_index()
         dfRanking = dfRanking.sort_values(by='Quantity', ascending=False).head(10)
 
         fig, ax = plt.subplots()

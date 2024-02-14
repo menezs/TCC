@@ -20,6 +20,7 @@ def allowed_file(filename):
 def rankingApriori():
 
     idParam = request.args.get('id')
+    country = request.args.get('country')
     collection = Mongo('uploads').collection
 
     fileName = collection.find_one({"_id": ObjectId(idParam)})
@@ -28,15 +29,20 @@ def rankingApriori():
 
     if os.path.exists(filePath):
 
+        if country == 'Null':
+            country = 'United Kingdom'
+
         plot = Plot(filePath)   
 
-        plot_data, listRankItens = plot.generate_plot()
+        plot_data, listRankItens = plot.generate_plot(country)
 
         analyzer = Analyzer(filePath, idParam)
 
+        countries = analyzer.getCountries(country)
+
         analyzerResults = analyzer.firstRanking(listRankItens)
 
-        response = jsonify({"success": True, "data": {"plot": plot_data, "ranking": analyzerResults}}), 200
+        response = jsonify({"success": True, "data": {"plot": plot_data, "ranking": analyzerResults, "countries": countries}}), 200
 
     else:
         print("Arquivo Não encontrado")
