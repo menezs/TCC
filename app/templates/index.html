@@ -96,7 +96,7 @@
         <br>
         <!-- Modal -->
         <div class="modal fade" id="staticBackdropRanking" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">Ranking - TOP 10</h5>
@@ -105,8 +105,13 @@
                     <div class="modal-body">
                         <select id="selectCountry" class="form-select" aria-label="Default select example">
                         </select>
-                        <div class="text-center">
-                            <img id="rankingPlot" class="img-fluid d-none" alt="Imagem de Exemplo">
+                        <div class="text-center row">
+                            <div class="col">
+                                <img id="rankingPlot1" class="img-fluid d-none" alt="Imagem de Exemplo">
+                            </div>
+                            <div class="col">
+                                <img id="rankingPlot2" class="img-fluid d-none" alt="Imagem de Exemplo">
+                            </div>
                         </div>
                         <div class="container">
                             <table id="rankingList" class="table table-bordered table-sm">
@@ -216,9 +221,13 @@
                     }
 
                     // Ocultar a imagem
-                    var rankingPlot = document.getElementById('rankingPlot');
-                    if (rankingPlot) {
-                        rankingPlot.classList.add('d-none');
+                    var rankingPlot1 = document.getElementById('rankingPlot1');
+                    if (rankingPlot1) {
+                        rankingPlot1.classList.add('d-none');
+                    }
+                    var rankingPlot2 = document.getElementById('rankingPlot2');
+                    if (rankingPlot2) {
+                        rankingPlot2.classList.add('d-none');
                     }
 
                     // Ocultar as Regras de Associação
@@ -262,9 +271,13 @@
                             selectCountry.classList.remove('d-none');
                         }
 
-                        if (rankingPlot) {
-                            rankingPlot.src = "data:image/png;base64,"+data.data.plot;
-                            rankingPlot.classList.remove('d-none');
+                        if (rankingPlot1) {
+                            rankingPlot1.src = "data:image/png;base64,"+data.data.plot1;
+                            rankingPlot1.classList.remove('d-none');
+                        }
+                        if (rankingPlot2) {
+                            rankingPlot2.src = "data:image/png;base64,"+data.data.plot2;
+                            rankingPlot2.classList.remove('d-none');
                         }
 
                         if (rankingList) {
@@ -279,27 +292,27 @@
                                                 '</thead>'+
                                                 '<tbody>';
 
-                            for (var i = 0; i < data.data.ranking.length; i++) {
-                                if (data.data.ranking[i] !== undefined) {
+                            for (var i = 0; i < data.data.ranking1.length; i++) {
+                                if (data.data.ranking1[i] !== undefined) {
                                     tabelaHTML +=  '<tr>'+
                                                         '<th scope="row">Rule</th>'+
-                                                        '<td>'+ data.data.ranking[i]["productA"] +'</td>'+
-                                                        '<td>'+ data.data.ranking[i]["productB"] +'</td>'+
+                                                        '<td>'+ data.data.ranking1[i]["productA"] +'</td>'+
+                                                        '<td>'+ data.data.ranking1[i]["productB"] +'</td>'+
                                                     '</tr>'+
                                                     
                                                     '<tr>'+
                                                         '<th scope="row">Confidence</th>'+
-                                                        '<td colspan="2">'+ data.data.ranking[i]["confidence"] +'</td>'+
+                                                        '<td colspan="2">'+ data.data.ranking1[i]["confidence"] +'</td>'+
                                                     '</tr>'+
 
                                                     '<tr>'+
                                                         '<th scope="row">Suppport</th>'+
-                                                        '<td colspan="2">'+ data.data.ranking[i]["support"] +'</td>'+
+                                                        '<td colspan="2">'+ data.data.ranking1[i]["support"] +'</td>'+
                                                     '</tr>'+
 
                                                     '<tr>'+
                                                         '<th scope="row">Lift</th>'+
-                                                        '<td colspan="2">'+ data.data.ranking[i]["lift"] +'</td>'+
+                                                        '<td colspan="2">'+ data.data.ranking1[i]["lift"] +'</td>'+
                                                     '</tr>';
                                 }else{
                                     tabelaHTML += '<tr>'+
@@ -353,9 +366,14 @@
                 }
 
                 // Ocultar a imagem
-                var rankingPlot = document.getElementById('rankingPlot');
-                if (rankingPlot) {
-                    rankingPlot.classList.add('d-none');
+                var rankingPlot1 = document.getElementById('rankingPlot1');
+                if (rankingPlot1) {
+                    rankingPlot1.classList.add('d-none');
+                }
+
+                var rankingPlot2 = document.getElementById('rankingPlot2');
+                if (rankingPlot2) {
+                    rankingPlot2.classList.add('d-none');
                 }
 
                 // Ocultar as Regras de Associação
@@ -383,10 +401,16 @@
                         spinnerContainer.classList.add('d-none');
                     }
 
-                    if (rankingPlot) {
-                        rankingPlot.src = "data:image/png;base64,"+data.data.plot;
-                        rankingPlot.classList.remove('d-none');
+                    if (rankingPlot1) {
+                        rankingPlot1.src = "data:image/png;base64,"+data.data.plot1;
+                        rankingPlot1.classList.remove('d-none');
                     }
+
+                    if (rankingPlot2) {
+                        rankingPlot2.src = "data:image/png;base64,"+data.data.plot2;
+                        rankingPlot2.classList.remove('d-none');
+                    }
+
 
                     if (rankingList) {
                         // Cria o HTML da tabela
@@ -400,27 +424,27 @@
                                             '</thead>'+
                                             '<tbody>';
 
-                        for (var i = 0; i < data.data.ranking.length; i++) {
-                            if (data.data.ranking[i] !== undefined) {
+                        for (var i = 0; i < data.data.ranking1.length; i++) {
+                            if (data.data.ranking1[i] !== undefined) {
                                 tabelaHTML +=  '<tr>'+
                                                     '<th scope="row">Rule</th>'+
-                                                    '<td>'+ data.data.ranking[i]["productA"] +'</td>'+
-                                                    '<td>'+ data.data.ranking[i]["productB"] +'</td>'+
+                                                    '<td>'+ data.data.ranking1[i]["productA"] +'</td>'+
+                                                    '<td>'+ data.data.ranking1[i]["productB"] +'</td>'+
                                                 '</tr>'+
                                                 
                                                 '<tr>'+
                                                     '<th scope="row">Confidence</th>'+
-                                                    '<td colspan="2">'+ data.data.ranking[i]["confidence"] +'</td>'+
+                                                    '<td colspan="2">'+ data.data.ranking1[i]["confidence"] +'</td>'+
                                                 '</tr>'+
 
                                                 '<tr>'+
                                                     '<th scope="row">Suppport</th>'+
-                                                    '<td colspan="2">'+ data.data.ranking[i]["support"] +'</td>'+
+                                                    '<td colspan="2">'+ data.data.ranking1[i]["support"] +'</td>'+
                                                 '</tr>'+
 
                                                 '<tr>'+
                                                     '<th scope="row">Lift</th>'+
-                                                    '<td colspan="2">'+ data.data.ranking[i]["lift"] +'</td>'+
+                                                    '<td colspan="2">'+ data.data.ranking1[i]["lift"] +'</td>'+
                                                 '</tr>';
                             }else{
                                 tabelaHTML += '<tr>'+

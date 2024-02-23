@@ -30,19 +30,28 @@ def rankingApriori():
     if os.path.exists(filePath):
 
         if country == 'Null':
-            country = 'United Kingdom'
+            country = 'Australia'
 
         plot = Plot(filePath)   
 
-        plot_data, listRankItens = plot.generate_plot(country)
+        plot_data1, listRankItens1, plot_data2, listRankItens2 = plot.generate_plot(country)
 
         analyzer = Analyzer(filePath, idParam)
 
         countries = analyzer.getCountries(country)
 
-        analyzerResults = analyzer.firstRanking(listRankItens)
+        analyzerResultsFirstYear = analyzer.firstRanking(listRankItens1, country)
+        analyzerResultsSecondYear = analyzer.firstRanking(listRankItens2, country)
 
-        response = jsonify({"success": True, "data": {"plot": plot_data, "ranking": analyzerResults, "countries": countries}}), 200
+        response = jsonify({
+            "success": True,
+            "data": {
+            "plot1": plot_data1,
+            "ranking1": analyzerResultsFirstYear,
+            "plot2": plot_data2,
+            "ranking2": analyzerResultsSecondYear,
+            "countries": countries}
+        }), 200
 
     else:
         print("Arquivo Não encontrado")

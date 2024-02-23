@@ -1,4 +1,5 @@
 from ..database.db_mongo import Mongo
+from datetime import datetime
 from apyori import apriori
 import pandas as pd
 import pymongo 
@@ -8,8 +9,18 @@ class Analyzer():
         self.filePath = filePath
         self.docId = docId
 
-    def createAssociationRules(self, records, docId):
-        association_rules = apriori(records, min_support=0.0045, min_confidence=0.2, min_lift=3, min_length=2)
+    def read_dataframe(self):
+
+        df = pd.read_csv(self.filePath, sep=';', low_memory=False)
+
+        df.dropna(subset=["Itemname"],inplace=True)
+
+        df['Date'] = df['Date'].apply(lambda x: datetime.strptime(x, "%d.%m.%Y %H:%M"))
+
+        return df
+    
+    def createAssociationRules(self, records, docId, country):
+        association_rules = apriori(records, min_support=0.0045, min_confidence=0.4, min_lift=3, min_length=2)
         association_results = list(association_rules)
 
         results = []
@@ -25,6 +36,7 @@ class Analyzer():
             atual.update({"confidence":  f"{str(item[2][0][2])}"})
             atual.update({"lift": f"{str(item[2][0][3])}"})
             atual.update({"docId": docId})
+            atual.update({"country": country})
 
             results.append(atual)
 
@@ -32,7 +44,7 @@ class Analyzer():
     
     def getCountries(self, country):
 
-        df = pd.read_csv(self.filePath, sep=';', low_memory=False)
+        df = self.read_dataframe()
         
         countries = []
         for country in df['Country']:
@@ -41,17 +53,15 @@ class Analyzer():
                 
         return countries
     
-    def firstRanking(self, rankingList):
+    def firstRanking(self, rankingList, country):
 
         collection = Mongo("aprioriResultsTest").collection
 
-        allData = collection.find({"docId": self.docId})
+        allData = collection.find({"docId": self.docId, "country": country})
 
-        if not allData:
+        if len(list(allData)) == 0:
 
-            dfData = pd.read_csv(self.filePath, sep=";", low_memory=False)
-
-            dfData.dropna(subset=["Itemname"],inplace=True)
+            dfData = self.read_dataframe()
 
             compraID = list(dfData.BillNo.drop_duplicates())
 
@@ -59,7 +69,7 @@ class Analyzer():
             for id in compraID:
                 records.append(list(dfData[dfData.BillNo == id].Itemname))
 
-            allData = self.createAssociationRules(records, self.docId)
+            allData = self.createAssociationRules(records, self.docId, country)
 
             collection.insert_many(allData)
 
