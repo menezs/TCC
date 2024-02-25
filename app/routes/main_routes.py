@@ -30,18 +30,18 @@ def rankingApriori():
     if os.path.exists(filePath):
 
         if country == 'Null':
-            country = 'Australia'
+            country = 'France'
 
         plot = Plot(filePath)   
 
-        plot_data1, listRankItens1, plot_data2, listRankItens2 = plot.generate_plot(country)
+        years, plot_data1, listRankItens1, plot_data2, listRankItens2 = plot.generate_plot(country)
 
         analyzer = Analyzer(filePath, idParam)
 
         countries = analyzer.getCountries(country)
 
-        analyzerResultsFirstYear = analyzer.firstRanking(listRankItens1, country)
-        analyzerResultsSecondYear = analyzer.firstRanking(listRankItens2, country)
+        analyzerResultsFirstYear = analyzer.firstRanking(listRankItens1, country, years[0])
+        analyzerResultsSecondYear = analyzer.firstRanking(listRankItens2, country, years[1])
 
         response = jsonify({
             "success": True,

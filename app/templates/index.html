@@ -113,9 +113,15 @@
                                 <img id="rankingPlot2" class="img-fluid d-none" alt="Imagem de Exemplo">
                             </div>
                         </div>
-                        <div class="container">
-                            <table id="rankingList" class="table table-bordered table-sm">
-                            </table>
+                        <div class="row container">
+                            <div id="col1" class="col">
+                                <table id="rankingList1" class="table table-bordered table-sm">
+                                </table>
+                            </div>
+                            <div id="col2" class="col">
+                                <table id="rankingList2" class="table table-bordered table-sm">
+                                </table>
+                            </div>
                         </div>
                         <div class="spinner-container text-center">
                             <div class="spinner-grow" style="width: 3rem; height: 3rem;" role="status">
@@ -189,7 +195,67 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
         <script src="https://kit.fontawesome.com/268c979937.js" crossorigin="anonymous"></script>
         <script>
-            
+            function createTable(rankingList){
+                var tabelaHTML = '<table>' +
+                                        '<thead>'+
+                                            '<tr>'+
+                                                '<th scope="col">#</th>'+
+                                                '<th scope="col">Produtct</th>'+
+                                                '<th scope="col">Consequent</th>'+
+                                            '</tr>'+
+                                        '</thead>'+
+                                    '<tbody>';
+
+                for (var i = 0; i < rankingList.length; i++) {
+                    if (rankingList[i] !== undefined) {
+                        tabelaHTML +=  '<tr>'+
+                                            '<th scope="row">Rule</th>'+
+                                            '<td>'+ rankingList[i]["product"] +'</td>'+
+                                            '<td>'+ rankingList[i]["consequent"] +'</td>'+
+                                        '</tr>'+
+                                        
+                                        '<tr>'+
+                                            '<th scope="row">Confidence</th>'+
+                                            '<td colspan="2">'+ rankingList[i]["confidence"] +'</td>'+
+                                        '</tr>'+
+
+                                        '<tr>'+
+                                            '<th scope="row">Support</th>'+
+                                            '<td colspan="2">'+ rankingList[i]["support"] +'</td>'+
+                                        '</tr>'+
+
+                                        '<tr>'+
+                                            '<th scope="row">Lift</th>'+
+                                            '<td colspan="2">'+ rankingList[i]["lift"] +'</td>'+
+                                        '</tr>';
+                    }else{
+                        tabelaHTML += '<tr>'+
+                                            '<th scope="row">Rule</th>'+
+                                            '<td>##################</td>'+
+                                            '<td>##################</td>'+
+                                        '</tr>'+
+                                        
+                                        '<tr>'+
+                                            '<th scope="row">Confidence</th>'+
+                                            '<td colspan="2">##################</td>'+
+                                        '</tr>'+
+
+                                        '<tr>'+
+                                            '<th scope="row">Suppport</th>'+
+                                            '<td colspan="2">##################</td>'+
+                                        '</tr>'+
+
+                                        '<tr>'+
+                                            '<th scope="row">Lift</th>'+
+                                            '<td colspan="2">##################</td>'+
+                                        '</tr>';
+                    }
+                }
+                tabelaHTML += '</tbody></table>';
+
+                return tabelaHTML;
+
+            }
             $(document).ready(function () {
                 $('#staticBackdropDelete').off('show.bs.modal').on('show.bs.modal', function (event) {
                     var button = $(event.relatedTarget); 
@@ -231,9 +297,13 @@
                     }
 
                     // Ocultar as Regras de Associação
-                    var rankingList = document.getElementById('rankingList');
-                    if (rankingList) {
-                        rankingList.classList.add('d-none');
+                    var rankingList1 = document.getElementById('rankingList1');
+                    if (rankingList1) {
+                        rankingList1.classList.add('d-none');
+                    }
+                    var rankingList2 = document.getElementById('rankingList2');
+                    if (rankingList2) {
+                        rankingList2.classList.add('d-none');
                     }
 
                     console.log(fileName)
@@ -280,72 +350,21 @@
                             rankingPlot2.classList.remove('d-none');
                         }
 
-                        if (rankingList) {
+                        if (rankingList1) {
                             // Cria o HTML da tabela
-                            var tabelaHTML = '<table>' +
-                                                '<thead>'+
-                                                '<tr>'+
-                                                    '<th scope="col">#</th>'+
-                                                    '<th scope="col">Item A</th>'+
-                                                    '<th scope="col">Item B</th>'+
-                                                '</tr>'+
-                                                '</thead>'+
-                                                '<tbody>';
+                           var tabelaHTML = createTable(data.data.ranking1)
 
-                            for (var i = 0; i < data.data.ranking1.length; i++) {
-                                if (data.data.ranking1[i] !== undefined) {
-                                    tabelaHTML +=  '<tr>'+
-                                                        '<th scope="row">Rule</th>'+
-                                                        '<td>'+ data.data.ranking1[i]["productA"] +'</td>'+
-                                                        '<td>'+ data.data.ranking1[i]["productB"] +'</td>'+
-                                                    '</tr>'+
-                                                    
-                                                    '<tr>'+
-                                                        '<th scope="row">Confidence</th>'+
-                                                        '<td colspan="2">'+ data.data.ranking1[i]["confidence"] +'</td>'+
-                                                    '</tr>'+
+                            rankingList1.innerHTML = tabelaHTML;
 
-                                                    '<tr>'+
-                                                        '<th scope="row">Suppport</th>'+
-                                                        '<td colspan="2">'+ data.data.ranking1[i]["support"] +'</td>'+
-                                                    '</tr>'+
+                            rankingList1.classList.remove('d-none');
+                        }
+                        if (rankingList2) {
+                            // Cria o HTML da tabela
+                           var tabelaHTML = createTable(data.data.ranking2)
 
-                                                    '<tr>'+
-                                                        '<th scope="row">Lift</th>'+
-                                                        '<td colspan="2">'+ data.data.ranking1[i]["lift"] +'</td>'+
-                                                    '</tr>';
-                                }else{
-                                    tabelaHTML += '<tr>'+
-                                                        '<th scope="row">Rule</th>'+
-                                                        '<td>##################</td>'+
-                                                        '<td>##################</td>'+
-                                                    '</tr>'+
-                                                    
-                                                    '<tr>'+
-                                                        '<th scope="row">Confidence</th>'+
-                                                        '<td colspan="2">##################</td>'+
-                                                    '</tr>'+
+                            rankingList2.innerHTML = tabelaHTML;
 
-                                                    '<tr>'+
-                                                        '<th scope="row">Suppport</th>'+
-                                                        '<td colspan="2">##################</td>'+
-                                                    '</tr>'+
-
-                                                    '<tr>'+
-                                                        '<th scope="row">Lift</th>'+
-                                                        '<td colspan="2">##################</td>'+
-                                                    '</tr>';
-                                }
-                            }
-
-                            // Fecha a tabela
-                            tabelaHTML += '</tbody></table>';
-
-                            rankingList.innerHTML = tabelaHTML;
-
-                            rankingList.classList.remove('d-none');
-
-
+                            rankingList2.classList.remove('d-none');
                         }
                     })
                     .catch(error => {
@@ -377,9 +396,13 @@
                 }
 
                 // Ocultar as Regras de Associação
-                var rankingList = document.getElementById('rankingList');
-                if (rankingList) {
-                    rankingList.classList.add('d-none');
+                var rankingList1 = document.getElementById('rankingList1');
+                if (rankingList1) {
+                    rankingList1.classList.add('d-none');
+                }
+                var rankingList2 = document.getElementById('rankingList2');
+                if (rankingList2) {
+                    rankingList2.classList.add('d-none');
                 }
 
                 fetch('/ranking-apriori?id='+idFile+'&country='+selectedText, {
@@ -412,71 +435,22 @@
                     }
 
 
-                    if (rankingList) {
+                    if (rankingList1) {
                         // Cria o HTML da tabela
-                        var tabelaHTML = '<table>' +
-                                            '<thead>'+
-                                            '<tr>'+
-                                                '<th scope="col">#</th>'+
-                                                '<th scope="col">Item A</th>'+
-                                                '<th scope="col">Item B</th>'+
-                                            '</tr>'+
-                                            '</thead>'+
-                                            '<tbody>';
+                        var tabelaHTML = createTable(data.data.ranking1)
 
-                        for (var i = 0; i < data.data.ranking1.length; i++) {
-                            if (data.data.ranking1[i] !== undefined) {
-                                tabelaHTML +=  '<tr>'+
-                                                    '<th scope="row">Rule</th>'+
-                                                    '<td>'+ data.data.ranking1[i]["productA"] +'</td>'+
-                                                    '<td>'+ data.data.ranking1[i]["productB"] +'</td>'+
-                                                '</tr>'+
-                                                
-                                                '<tr>'+
-                                                    '<th scope="row">Confidence</th>'+
-                                                    '<td colspan="2">'+ data.data.ranking1[i]["confidence"] +'</td>'+
-                                                '</tr>'+
+                        rankingList1.innerHTML = tabelaHTML;
 
-                                                '<tr>'+
-                                                    '<th scope="row">Suppport</th>'+
-                                                    '<td colspan="2">'+ data.data.ranking1[i]["support"] +'</td>'+
-                                                '</tr>'+
+                        rankingList1.classList.remove('d-none');
 
-                                                '<tr>'+
-                                                    '<th scope="row">Lift</th>'+
-                                                    '<td colspan="2">'+ data.data.ranking1[i]["lift"] +'</td>'+
-                                                '</tr>';
-                            }else{
-                                tabelaHTML += '<tr>'+
-                                                    '<th scope="row">Rule</th>'+
-                                                    '<td>##################</td>'+
-                                                    '<td>##################</td>'+
-                                                '</tr>'+
-                                                
-                                                '<tr>'+
-                                                    '<th scope="row">Confidence</th>'+
-                                                    '<td colspan="2">##################</td>'+
-                                                '</tr>'+
+                    }
+                    if (rankingList2) {
+                        // Cria o HTML da tabela
+                        var tabelaHTML = createTable(data.data.ranking2)
 
-                                                '<tr>'+
-                                                    '<th scope="row">Suppport</th>'+
-                                                    '<td colspan="2">##################</td>'+
-                                                '</tr>'+
+                        rankingList2.innerHTML = tabelaHTML;
 
-                                                '<tr>'+
-                                                    '<th scope="row">Lift</th>'+
-                                                    '<td colspan="2">##################</td>'+
-                                                '</tr>';
-                            }
-                        }
-
-                        // Fecha a tabela
-                        tabelaHTML += '</tbody></table>';
-
-                        rankingList.innerHTML = tabelaHTML;
-
-                        rankingList.classList.remove('d-none');
-
+                        rankingList2.classList.remove('d-none');
 
                     }
                 })

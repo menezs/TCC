@@ -6,5 +6,5 @@ flask-bcrypt
 pandas
 pyarrow
 matplotlib
-apyori
+efficient-apriori
 gunicorn

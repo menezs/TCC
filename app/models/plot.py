@@ -63,4 +63,4 @@ class Plot():
         plot_data1 = self.create_plot(dfRankingFirstYear['Itemname'][::-1], dfRankingFirstYear['Quantity'][::-1], years[0])
         plot_data2 = self.create_plot(dfRankingSecondYear['Itemname'][::-1], dfRankingSecondYear['Quantity'][::-1], years[1])
 
-        return plot_data1, list(dfRankingSecondYear['Itemname']), plot_data2, list(dfRankingSecondYear['Itemname'])
+        return years[:2], plot_data1, list(dfRankingFirstYear['Itemname']), plot_data2, list(dfRankingSecondYear['Itemname'])

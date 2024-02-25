@@ -1,6 +1,6 @@
 from ..database.db_mongo import Mongo
 from datetime import datetime
-from apyori import apriori
+from efficient_apriori import apriori
 import pandas as pd
 import pymongo 
 
@@ -20,25 +20,20 @@ class Analyzer():
         return df
     
     def createAssociationRules(self, records, docId, country):
-        association_rules = apriori(records, min_support=0.0045, min_confidence=0.4, min_lift=3, min_length=2)
-        association_results = list(association_rules)
+        item_set, association_rules = apriori(records, min_support=0.0045, min_confidence=0.4, max_length=2) #, min_lift=3, min_length=2)
 
         results = []
-        for item in association_results:
-            
-            atual = {}
-
-            pair = item[0] 
-            items = [x for x in pair]
-            atual.update({"itemA": f"{str(items[0])}"})
-            atual.update({"itemB": f"{str(items[1])}"})
-            atual.update({"support":  f"{str(item[1])}"})
-            atual.update({"confidence":  f"{str(item[2][0][2])}"})
-            atual.update({"lift": f"{str(item[2][0][3])}"})
-            atual.update({"docId": docId})
-            atual.update({"country": country})
-
-            results.append(atual)
+        for rule in association_rules:
+            if len(rule.lhs) == 1:
+                atual = {}
+                atual.update({"product": rule.lhs[0]})
+                atual.update({"consequent": rule.rhs[0]})
+                atual.update({"confidence": rule.confidence})
+                atual.update({"support": rule.support})
+                atual.update({"lift": rule.lift})
+                atual.update({'country': country})
+                atual.update({'docId': docId})
+                results.append(atual)
 
         return results
     
@@ -53,9 +48,9 @@ class Analyzer():
                 
         return countries
     
-    def firstRanking(self, rankingList, country):
+    def firstRanking(self, rankingList, country, year):
 
-        collection = Mongo("aprioriResultsTest").collection
+        collection = Mongo("aprioriResults").collection
 
         allData = collection.find({"docId": self.docId, "country": country})
 
@@ -63,7 +58,10 @@ class Analyzer():
 
             dfData = self.read_dataframe()
 
-            compraID = list(dfData.BillNo.drop_duplicates())
+            dfCountry = dfData[dfData['Country'] == country]
+            dfCountryYear = dfCountry[dfCountry['Date'].apply(lambda x: x.year == year)]
+
+            compraID = list(dfCountryYear.BillNo.drop_duplicates())
 
             records = []
             for id in compraID:
@@ -77,7 +75,7 @@ class Analyzer():
 
         for item in rankingList:
 
-            dataDB = collection.find({"docId": self.docId, "productA": item}).sort("confidence", pymongo.DESCENDING)
+            dataDB = collection.find({"docId": self.docId, "product": item}).sort("confidence", pymongo.DESCENDING)
             dataListDB = list(dataDB)
 
             if len(dataListDB) > 0:
@@ -85,8 +83,8 @@ class Analyzer():
                 dataDB = dataListDB[0]
             else:
                 dataDB = {
-                    "productA": item,
-                    "productB": "Undefined",
+                    "product": item,
+                    "consequent": "Undefined",
                     "confidence": 0,
                     "support": 0,
                     "lift": 0
