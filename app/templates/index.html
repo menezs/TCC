@@ -113,14 +113,14 @@
                                 <img id="rankingPlot2" class="img-fluid d-none" alt="Imagem de Exemplo">
                             </div>
                         </div>
-                        <div class="row container">
+                        <div class="row">
                             <div id="col1" class="col">
-                                <table id="rankingList1" class="table table-bordered table-sm">
-                                </table>
+                                <div id="rankingList1">
+                                </div>
                             </div>
                             <div id="col2" class="col">
-                                <table id="rankingList2" class="table table-bordered table-sm">
-                                </table>
+                                <div id="rankingList2">
+                                </div>
                             </div>
                         </div>
                         <div class="spinner-container text-center">
@@ -195,77 +195,59 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
         <script src="https://kit.fontawesome.com/268c979937.js" crossorigin="anonymous"></script>
         <script>
+            var accordionCounter = 0; 
             function createTable(rankingList){
-                var tabelaHTML = '<table>' +
-                                        '<thead>'+
-                                            '<tr>'+
-                                                '<th scope="col">#</th>'+
-                                                '<th scope="col">Produtct</th>'+
-                                                '<th scope="col">Consequent</th>'+
-                                            '</tr>'+
-                                        '</thead>'+
-                                    '<tbody>';
-
+                var tabelaHTML = '<div class="accordion" id="accordionExample' + accordionCounter + '">';
+                            
                 for (var i = 0; i < rankingList.length; i++) {
                     if (rankingList[i] !== undefined) {
-                        tabelaHTML +=  '<tr>'+
-                                            '<th scope="row">Rule</th>'+
-                                            '<td>'+ rankingList[i]["product"] +'</td>'+
-                                            '<td>'+ rankingList[i]["consequent"] +'</td>'+
-                                        '</tr>'+
-                                        
-                                        '<tr>'+
-                                            '<th scope="row">Confidence</th>'+
-                                            '<td colspan="2">'+ rankingList[i]["confidence"] +'</td>'+
-                                        '</tr>'+
-
-                                        '<tr>'+
-                                            '<th scope="row">Support</th>'+
-                                            '<td colspan="2">'+ rankingList[i]["support"] +'</td>'+
-                                        '</tr>'+
-
-                                        '<tr>'+
-                                            '<th scope="row">Lift</th>'+
-                                            '<td colspan="2">'+ rankingList[i]["lift"] +'</td>'+
-                                        '</tr>';
-                    }else{
-                        tabelaHTML += '<tr>'+
-                                            '<th scope="row">Rule</th>'+
-                                            '<td>##################</td>'+
-                                            '<td>##################</td>'+
-                                        '</tr>'+
-                                        
-                                        '<tr>'+
-                                            '<th scope="row">Confidence</th>'+
-                                            '<td colspan="2">##################</td>'+
-                                        '</tr>'+
-
-                                        '<tr>'+
-                                            '<th scope="row">Suppport</th>'+
-                                            '<td colspan="2">##################</td>'+
-                                        '</tr>'+
-
-                                        '<tr>'+
-                                            '<th scope="row">Lift</th>'+
-                                            '<td colspan="2">##################</td>'+
-                                        '</tr>';
+                        tabelaHTML +=  '<div class="accordion-item">'+
+                                            '<h2 class="accordion-header">'+
+                                                '<button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse' + accordionCounter + '-' + i + '" aria-expanded="true" aria-controls="collapse' + accordionCounter + '-' + i + '">'+
+                                                    rankingList[i]["product"] + ' -> ' + rankingList[i]["consequent"] +
+                                                '</button>'+
+                                            '</h2>'+
+                                    
+                                            '<div id="collapse' + accordionCounter + '-' + i + '" class="accordion-collapse collapse" data-bs-parent="#accordionExample' + accordionCounter + '">'+
+                                                '<div class="accordion-body">'+
+                                                    '<table class="table table-bordered table-sm">'+
+                                                        '<tbody>'+
+                                                            '<tr>'+
+                                                                '<th scope="row">Confidence</th>'+
+                                                                '<td colspan="2">'+ rankingList[i]["confidence"] +'</td>'+
+                                                            '</tr>'+
+                                                        
+                                                            '<tr>'+
+                                                                '<th scope="row">Support</th>'+
+                                                                '<td colspan="2">'+ rankingList[i]["support"] +'</td>'+
+                                                            '</tr>'+
+                                                            
+                                                            '<tr>'+
+                                                                '<th scope="row">Lift</th>'+
+                                                                '<td colspan="2">'+ rankingList[i]["lift"] +'</td>'+
+                                                            '</tr>'+
+                                                        '</tbody>'+
+                                                    '</table>'+
+                                                '</div>'+
+                                            '</div>'+ 
+                                        '</div>';
                     }
                 }
-                tabelaHTML += '</tbody></table>';
-
+                tabelaHTML += '</div>';
+                accordionCounter++; 
+                
                 return tabelaHTML;
-
             }
             $(document).ready(function () {
                 $('#staticBackdropDelete').off('show.bs.modal').on('show.bs.modal', function (event) {
                     var button = $(event.relatedTarget); 
                     var fileName = button.data('filename');
                     var idFile = button.data('id');
-
+                    
                     console.log(fileName)
-        
+                    
                     $('#fileName').text(fileName);
-
+                    
                     document.getElementById('deleteFile').setAttribute('data-deleteid', idFile);
                 });
             });
@@ -274,18 +256,18 @@
                     var button = $(event.relatedTarget); 
                     var fileName = button.data('filename');
                     var idFile = button.data('id');
-
+                    
                     var selectCountry = document.getElementById('selectCountry')
                     if (selectCountry) {
                         selectCountry.classList.add('d-none');
                     }
-
+                    
                     // Exibir o spinner enquanto a requisição está sendo processada
                     var spinnerContainer = document.querySelector('.spinner-container');
                     if (spinnerContainer) {
                         spinnerContainer.classList.remove('d-none');
                     }
-
+                    
                     // Ocultar a imagem
                     var rankingPlot1 = document.getElementById('rankingPlot1');
                     if (rankingPlot1) {
@@ -295,7 +277,7 @@
                     if (rankingPlot2) {
                         rankingPlot2.classList.add('d-none');
                     }
-
+                    
                     // Ocultar as Regras de Associação
                     var rankingList1 = document.getElementById('rankingList1');
                     if (rankingList1) {
@@ -305,7 +287,7 @@
                     if (rankingList2) {
                         rankingList2.classList.add('d-none');
                     }
-
+                    
                     console.log(fileName)
                     fetch('/ranking-apriori?id='+idFile+'&country=Null', {
                         method: 'GET',
@@ -326,44 +308,44 @@
                         if (spinnerContainer) {
                             spinnerContainer.classList.add('d-none');
                         }
-
+                        
                         if (selectCountry) {
-
+                            
                             var selectHTML = `<option selected data-id="${idFile}">Open this select Country</option>`;
-
+                            
                             for (var i = 0; i < data.data.countries.length; i++) {
                                 selectHTML +=   `<option value="${i}" data-id="${idFile}">
-                                                    ${data.data.countries[i]}
-                                                </option>`;
-                            
+                                    ${data.data.countries[i]}
+                                    </option>`;
+                                    
+                                }
+                                selectCountry.innerHTML = selectHTML;
+                                selectCountry.classList.remove('d-none');
                             }
-                            selectCountry.innerHTML = selectHTML;
-                            selectCountry.classList.remove('d-none');
-                        }
-
-                        if (rankingPlot1) {
-                            rankingPlot1.src = "data:image/png;base64,"+data.data.plot1;
-                            rankingPlot1.classList.remove('d-none');
-                        }
-                        if (rankingPlot2) {
-                            rankingPlot2.src = "data:image/png;base64,"+data.data.plot2;
-                            rankingPlot2.classList.remove('d-none');
-                        }
-
-                        if (rankingList1) {
-                            // Cria o HTML da tabela
-                           var tabelaHTML = createTable(data.data.ranking1)
-
-                            rankingList1.innerHTML = tabelaHTML;
-
-                            rankingList1.classList.remove('d-none');
-                        }
+                            
+                            if (rankingPlot1) {
+                                rankingPlot1.src = "data:image/png;base64,"+data.data.plot1;
+                                rankingPlot1.classList.remove('d-none');
+                            }
+                            if (rankingPlot2) {
+                                rankingPlot2.src = "data:image/png;base64,"+data.data.plot2;
+                                rankingPlot2.classList.remove('d-none');
+                            }
+                            
+                            if (rankingList1) {
+                                // Cria o HTML da tabela
+                                var tabelaHTML = createTable(data.data.ranking1)
+                                
+                                rankingList1.innerHTML = tabelaHTML;
+                                
+                                rankingList1.classList.remove('d-none');
+                            }
                         if (rankingList2) {
                             // Cria o HTML da tabela
-                           var tabelaHTML = createTable(data.data.ranking2)
-
+                            var tabelaHTML = createTable(data.data.ranking2)
+                            
                             rankingList2.innerHTML = tabelaHTML;
-
+                            
                             rankingList2.classList.remove('d-none');
                         }
                     })
@@ -377,19 +359,19 @@
                 
                 var selectedText = this.options[this.selectedIndex].textContent.trim();
                 var idFile = this.options[this.selectedIndex].dataset.id;
-
+                
                 // Exibir o spinner enquanto a requisição está sendo processada
                 var spinnerContainer = document.querySelector('.spinner-container');
                 if (spinnerContainer) {
                     spinnerContainer.classList.remove('d-none');
                 }
-
+                
                 // Ocultar a imagem
                 var rankingPlot1 = document.getElementById('rankingPlot1');
                 if (rankingPlot1) {
                     rankingPlot1.classList.add('d-none');
                 }
-
+                
                 var rankingPlot2 = document.getElementById('rankingPlot2');
                 if (rankingPlot2) {
                     rankingPlot2.classList.add('d-none');
@@ -404,7 +386,7 @@
                 if (rankingList2) {
                     rankingList2.classList.add('d-none');
                 }
-
+                
                 fetch('/ranking-apriori?id='+idFile+'&country='+selectedText, {
                     method: 'GET',
                     headers: {
@@ -423,35 +405,35 @@
                     if (spinnerContainer) {
                         spinnerContainer.classList.add('d-none');
                     }
-
+                    
                     if (rankingPlot1) {
                         rankingPlot1.src = "data:image/png;base64,"+data.data.plot1;
                         rankingPlot1.classList.remove('d-none');
                     }
-
+                    
                     if (rankingPlot2) {
                         rankingPlot2.src = "data:image/png;base64,"+data.data.plot2;
                         rankingPlot2.classList.remove('d-none');
                     }
-
-
+                    
+                    
                     if (rankingList1) {
                         // Cria o HTML da tabela
                         var tabelaHTML = createTable(data.data.ranking1)
-
+                        
                         rankingList1.innerHTML = tabelaHTML;
-
+                        
                         rankingList1.classList.remove('d-none');
-
+                        
                     }
                     if (rankingList2) {
                         // Cria o HTML da tabela
                         var tabelaHTML = createTable(data.data.ranking2)
-
+                        
                         rankingList2.innerHTML = tabelaHTML;
-
+                        
                         rankingList2.classList.remove('d-none');
-
+                        
                     }
                 })
                 .catch(error => {
@@ -461,11 +443,11 @@
             function deleteFile(){
                 var deleteButton = document.getElementById("deleteFile");
                 var idFile = deleteButton.dataset.deleteid;
-
+                
                 deleteButton.disabled = true;
-
+                
                 deleteButton.innerHTML = "Loading...";
-
+                
                 fetch('/delete?id='+idFile, {
                     method: 'POST',
                     headers: {
