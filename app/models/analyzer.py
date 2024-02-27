@@ -19,7 +19,7 @@ class Analyzer():
 
         return df
     
-    def createAssociationRules(self, records, docId, country):
+    def createAssociationRules(self, records, docId, country, year):
         item_set, association_rules = apriori(records, min_support=0.0045, min_confidence=0.4, max_length=2) #, min_lift=3, min_length=2)
 
         results = []
@@ -33,6 +33,7 @@ class Analyzer():
                 atual.update({"lift": rule.lift})
                 atual.update({'country': country})
                 atual.update({'docId': docId})
+                atual.update({'year': year})
                 results.append(atual)
 
         return results
@@ -52,7 +53,7 @@ class Analyzer():
 
         collection = Mongo("aprioriResults").collection
 
-        allData = collection.find({"docId": self.docId, "country": country})
+        allData = collection.find({"docId": self.docId, "country": country, "year": year})
 
         if len(list(allData)) == 0:
 
@@ -67,7 +68,7 @@ class Analyzer():
             for id in compraID:
                 records.append(list(dfData[dfData.BillNo == id].Itemname))
 
-            allData = self.createAssociationRules(records, self.docId, country)
+            allData = self.createAssociationRules(records, self.docId, country, year)
 
             collection.insert_many(allData)
 
