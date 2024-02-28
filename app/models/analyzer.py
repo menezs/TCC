@@ -43,9 +43,9 @@ class Analyzer():
         df = self.read_dataframe()
         
         countries = []
-        for country in df['Country']:
-            if not country in countries:
-                countries.append(country)
+        for countryDF in df['Country']:
+            if not countryDF in countries:
+                countries.append(countryDF)
                 
         return countries
     
@@ -76,7 +76,7 @@ class Analyzer():
 
         for item in rankingList:
 
-            dataDB = collection.find({"docId": self.docId, "product": item}).sort("confidence", pymongo.DESCENDING)
+            dataDB = collection.find({"docId": self.docId, "product": item, "country": country, "year": year}).sort("confidence", pymongo.DESCENDING)
             dataListDB = list(dataDB)
 
             if len(dataListDB) > 0:
