@@ -19,7 +19,7 @@ class Analyzer():
 
         return df
     
-    def createAssociationRules(self, records, docId, country, year):
+    def createAssociationRulesForMarket(self, records, docId, country, year):
         item_set, association_rules = apriori(records, min_support=0.0045, min_confidence=0.4, max_length=2) #, min_lift=3, min_length=2)
 
         results = []
@@ -68,7 +68,7 @@ class Analyzer():
             for id in compraID:
                 records.append(list(dfData[dfData.BillNo == id].Itemname))
 
-            allData = self.createAssociationRules(records, self.docId, country, year)
+            allData = self.createAssociationRulesForMarket(records, self.docId, country, year)
 
             collection.insert_many(allData)
 
