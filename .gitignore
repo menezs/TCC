@@ -5,4 +5,5 @@ teste.py
 app/static/files/*
 !app/static/files/
 !app/static/files/defaultMarketBasket.csv
+!app/static/files/playlists.csv
 teste.csv

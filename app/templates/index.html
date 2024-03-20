@@ -67,8 +67,8 @@
                         <a href="#">
                             <i
                                 data-bs-toggle="modal"
-                                data-bs-target="#staticBackdropRanking"
-                                data-fileName="defaultMarketBasket.csv"
+                                data-bs-target="#staticBackdropMusic"
+                                data-fileName="playlists.csv"
                                 data-id="65cd103e2888c0d779cc5314"
                                 >
                                 Analysis
@@ -134,6 +134,39 @@
         </div>
         <br>
         <br>
+        <!-- Modal -->
+        <div class="modal fade" id="staticBackdropMusic" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Music Recommendation</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <select id="selectMusic1" class="form-select" aria-label="Default select example">
+                        </select>
+                        <select id="selectMusic2" class="form-select" aria-label="Default select example">
+                        </select>
+                        <div class="row">
+                            <div id="col1" class="col">
+                                <div id="rankingRecommendation">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="spinner-container-music text-center">
+                            <div class="spinner-grow" style="width: 3rem; height: 3rem;" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+                        <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+        <br> 
         <!-- Modal -->
         <div class="modal fade" id="staticBackdropRanking" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
             <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
@@ -278,6 +311,29 @@
                 
                 return tabelaHTML;
             }
+            function createTableMusic(rankingList){
+                var tabelaHTML = '<table class="table">'+
+                                    '<thead>'+
+                                        '<tr>'+
+                                        '<th scope="col">#</th>'+
+                                        '<th scope="col">Music Name</th>'+
+                                        '</tr>'+
+                                    '</thead>'+
+                                    '<tbody>';
+                            
+                for (var i = 0; i < rankingList.length; i++) {
+                    if (rankingList[i] !== undefined) {
+                        tabelaHTML +=  '<tr>'+
+                                        '<th scope="row">'+i+'</th>'+
+                                        '<td>'+rankingList[i]['consequent']+'</td>'+
+                                        '</tr>';
+                                            
+                    }
+                }
+                tabelaHTML += '</tbody></table>';
+                
+                return tabelaHTML;
+            }
             $(document).ready(function () {
                 $('#staticBackdropDelete').off('show.bs.modal').on('show.bs.modal', function (event) {
                     var button = $(event.relatedTarget); 
@@ -291,6 +347,135 @@
                     document.getElementById('deleteFile').setAttribute('data-deleteid', idFile);
                 });
             });
+
+            $(document).ready(function () {
+                $('#staticBackdropMusic').off('show.bs.modal').on('show.bs.modal', function (event) {
+                    var button = $(event.relatedTarget); 
+                    var fileName = button.data('filename');
+                    var idFile = button.data('id');
+                    
+                    var selectMusic1 = document.getElementById('selectMusic1')
+                    if (selectMusic1) {
+                        selectMusic1.classList.add('d-none');
+                    }
+                    var selectMusic2 = document.getElementById('selectMusic2')
+                    if (selectMusic2) {
+                        selectMusic2.classList.add('d-none');
+                    }
+
+                    var rankingRecommendation = document.getElementById('rankingRecommendation');
+                    if (rankingRecommendation) {
+                        rankingRecommendation.classList.add('d-none');
+                    }
+                    
+                    // Exibir o spinner enquanto a requisição está sendo processada
+                    var spinnerContainer = document.querySelector('.spinner-container-music');
+                    if (spinnerContainer) {
+                        spinnerContainer.classList.remove('d-none');
+                    }
+                    
+                    console.log(fileName)
+                    fetch('/ranking-music?id='+idFile+'&music1=Null&music2=Null', {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Erro na requisição.');
+                        }
+                        return response.json(); 
+                    })
+                    .then(data => {
+                        // console.log(data);
+                        
+                        // Ocultar o spinner após receber a resposta
+                        if (spinnerContainer) {
+                            spinnerContainer.classList.add('d-none');
+                        }
+                        
+                        if (selectMusic1) {
+                            
+                            var selectHTML = `<option selected data-id="${idFile}">Open this select music</option>`;
+                            
+                            for (var i = 0; i < data.data.music.length; i++) {
+                                selectHTML +=   `<option value="${i}" data-id="${idFile}">
+                                                ${data.data.music[i]}
+                                                </option>`;
+                                    
+                            }
+                            selectMusic1.innerHTML = selectHTML;
+                            selectMusic1.classList.remove('d-none');
+                        }
+
+                        if (selectMusic2) {
+                            
+                            var selectHTML = `<option selected data-id="${idFile}">Open this select music</option>`;
+                            
+                            for (var i = 0; i < data.data.music.length; i++) {
+                                selectHTML +=   `<option value="${i}" data-id="${idFile}">
+                                                ${data.data.music[i]}
+                                                </option>`;
+                                    
+                            }
+                            selectMusic2.innerHTML = selectHTML;
+                            selectMusic2.classList.remove('d-none');
+                        }
+                            
+                    })
+                    .catch(error => {
+                        console.error('Erro:', error);
+                    })
+                });
+            });
+
+            document.getElementById('selectMusic2').addEventListener('change', function() {
+
+                var teste = document.getElementById('selectMusic1');
+                
+                var selectedText = this.options[this.selectedIndex].textContent.trim();
+                var idFile = this.options[this.selectedIndex].dataset.id;
+                
+                // Exibir o spinner enquanto a requisição está sendo processada
+                var spinnerContainer = document.querySelector('.spinner-container-music');
+                if (spinnerContainer) {
+                    spinnerContainer.classList.remove('d-none');
+                }
+
+                var rankingRecommendation = document.getElementById('rankingRecommendation');
+                if (rankingRecommendation) {
+                    rankingRecommendation.classList.add('d-none');
+                }
+                
+                fetch('/ranking-music?id='+idFile+'&music1='+teste.value+'&music2='+selectedText, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erro na requisição.');
+                    }
+                    return response.json(); 
+                })
+                .then(data => {
+                    
+                    // Ocultar o spinner após receber a resposta
+                    if (spinnerContainer) {
+                        spinnerContainer.classList.add('d-none');
+                    }
+                    var tableMusic = createTableMusic(data.data.recommendation);
+                    rankingRecommendation.innerHTML = tableMusic;
+                            
+                    rankingRecommendation.classList.remove('d-none');
+                })
+                .catch(error => {
+                    console.error('Erro:', error);
+                })
+            });
+
             $(document).ready(function () {
                 $('#staticBackdropRanking').off('show.bs.modal').on('show.bs.modal', function (event) {
                     var button = $(event.relatedTarget); 

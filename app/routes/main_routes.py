@@ -5,6 +5,7 @@ from app.models.analyzer import Analyzer
 from ..database.db_mongo import Mongo
 from bson.objectid import ObjectId
 from app.models.plot import Plot
+from app.models.music import Music
 from app import app
 import os
 import matplotlib
@@ -14,6 +15,59 @@ ALLOWED_EXTENSIONS = {'csv'}
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@app.route("/ranking-music", methods=['GET'])
+@login_required
+def rankingMusic():
+
+    idParam = request.args.get('id')
+    music1 = request.args.get('music1')
+    music2 = request.args.get('music2')
+    collection = Mongo('uploads').collection
+    
+    fileName = collection.find_one({"_id": ObjectId(idParam)})
+
+    filePath = os.path.join(os.path.abspath(os.path.dirname(__file__)), app.config['UPLOAD_FOLDER'], 'playlists.csv')
+
+    print(filePath)
+
+    if os.path.exists(filePath):
+
+        music = Music(filePath) 
+
+        musicRecommendation = []
+        musicList = music.getMusic()
+
+        if (music1 != 'Null') or (music2 != 'Null'):
+
+            music1 = musicList[int(music1)]
+
+            if music1 == 'Null':
+                music1 = "('Til) I Kissed You"
+            else:
+                music1 = music1.replace("%20", " ")
+            
+            if music2 == 'Null':
+                music2 = "April In Paris"
+            else:
+                music2 = music2.replace("%20", " ") 
+
+            musicRecommendation = music.getRecommendation(music1, music2)      
+
+        response = jsonify({
+            "success": True,
+            "data": {
+                'music': musicList,
+                'recommendation': musicRecommendation
+            }
+        }), 200
+
+    else:
+        print("Arquivo Não encontrado")
+
+        response = jsonify({"success": False}), 200
+
+    return response
 
 @app.route("/ranking-apriori", methods=['GET'])
 @login_required
